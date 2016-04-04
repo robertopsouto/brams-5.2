@@ -775,8 +775,11 @@ contains
    !$OMP BARRIER
    !$OMP MASTER
    !- integer
-   allocate(ipos  (nofcols))
-   ipos =0 !integer                     
+   allocate(ipos  (nofcols));
+   if ( allocated(ipos) ) then 
+      print*, "ipos allocated"
+      ipos =0 !integer                     
+   end if
    allocate(jpos  (nofcols))     ;jpos =0 !integer
    allocate(imask (nofcols))     ;imask=0 !integer
    !- real
@@ -863,11 +866,13 @@ contains
    !$OMP DO  
    do j=ja,jz
       do i=ia,iz
+
          noc=noc+omp_get_num_threads()
-         !print *, "noc, threadid: ", noc, omp_get_thread_num()
       
          ipos(noc)=i
          jpos(noc)=j
+         print *, "i, ipos(noc), tid: ", i, ipos(noc), omp_get_thread_num()
+         print *
          
          !- 2d input data
          coszen(noc)= radiate_g(ngrid)%cosz(i,j)
