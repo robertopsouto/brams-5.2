@@ -531,7 +531,7 @@ contains
                         ,iwl                      &
                         ,ice_frac                 &
                                                   )
-   use omp_lib
+   !use omp_lib
    implicit none
    integer, intent(in) :: ia,iz,ja,jz
    integer, intent(in) :: mxp,myp,mzp,mynum
@@ -730,13 +730,53 @@ contains
    character(len=2) :: cmzp
    integer :: itime(4)
    integer(kind=im) :: ncbandssw,ncbandslw
+
+   integer :: omp_get_num_threads, omp_get_thread_num
+   double precision :: omp_get_wtime 
    
    nofcols=(iz-ia+1)*(jz-ja+1)
    nlay=mzp-1
+   !print *,"nofcols: ",nofcols
+   !print *
 
+  
+   tauc_lw     =0.0
+   tauc_sw     =0.0
+   taucloud_lw =0.0
+   taucloud_sw =0.0
+   taucldorig  =0.0
+   ssac        =0.0
+   asmc        =0.0
+   fsfc        =0.0
+   ssacloud    =0.0
+   asmcloud    =0.0
+  
+   !-initialization of rrtm memory
+   if(firsttime) call initrrtm() 
+   !
+   !- day of year
+   dyofyr=julday(imonth1, idate1, iyear1)
+   
+   !prsnz  = (pi01dn(mzp,1)/cp)**cpor*p00
+   aot_rrtm_sw=0.0
+   aot_rrtm_lw=0.0
+   !-
+   !- column counter 
 
+   tInicial = omp_get_wtime()
+
+   !$OMP PARALLEL                    &
+   !$OMP DEFAULT(SHARED)             &
+   !$OMP PRIVATE(j,i,noc,np,k)       
+   noc=omp_get_thread_num()
+   ntr=omp_get_num_threads()
+   print *, "VALOR nofcols,noc,ntr: ", nofcols,noc,ntr
+
+   !$OMP BARRIER
+   !$OMP MASTER
    !- integer
-   allocate(ipos  (nofcols))     ;ipos =0 !integer                     
+   allocate(ipos  (nofcols))
+   ipos =0 !integer                     
    allocate(jpos  (nofcols))     ;jpos =0 !integer
    allocate(imask (nofcols))     ;imask=0 !integer
    !- real
@@ -817,44 +857,14 @@ contains
    allocate(asdif (nofcols))     ;  asdif =0.0
    allocate(aldif (nofcols))     ;  aldif =0.0
    allocate(coszen(nofcols))     ;  coszen=0.0
-  
-   tauc_lw     =0.0
-   tauc_sw     =0.0
-   taucloud_lw =0.0
-   taucloud_sw =0.0
-   taucldorig  =0.0
-   ssac        =0.0
-   asmc        =0.0
-   fsfc        =0.0
-   ssacloud    =0.0
-   asmcloud    =0.0
-  
-   !-initialization of rrtm memory
-   if(firsttime) call initrrtm() 
-   !
-   !- day of year
-   dyofyr=julday(imonth1, idate1, iyear1)
-   
-   !prsnz  = (pi01dn(mzp,1)/cp)**cpor*p00
-   aot_rrtm_sw=0.0
-   aot_rrtm_lw=0.0
-   !-
-   !- column counter 
+   !$OMP END MASTER
+   !$OMP BARRIER
 
-   tInicial = omp_get_wtime()
-
-   !$OMP PARALLEL                    &
-   !$OMP DEFAULT(SHARED)             &
-   !$OMP PRIVATE(j,i,noc,np,k)       
-   noc=omp_get_thread_num()
-   ntr=omp_get_num_threads()
-   print *, "VALOR nofcols,noc,ntr: ", nofcols,noc,ntr
-
-   !$OMP DO 
+   !$OMP DO  
    do j=ja,jz
       do i=ia,iz
          noc=noc+omp_get_num_threads()
-         !print *, "noc: ", noc
+         !print *, "noc, threadid: ", noc, omp_get_thread_num()
       
          ipos(noc)=i
          jpos(noc)=j
@@ -975,14 +985,16 @@ contains
       end do
    end do
    !$OMP END DO 
-   !$OMP END PARALLEL
+
+   !$OMP BARRIER
+   !$OMP MASTER
    tFinal = omp_get_wtime()
    tTotal = tFinal - tInicial
    print *, "============= TEMPO ====================="
    print *, tTotal
    print *, "========================================="
 
-   stop
+
    ecaer =0.0_rb
    
    if(firsttime) then
@@ -1379,6 +1391,12 @@ contains
    deallocate(asdif )
    deallocate(aldif )
    deallocate(coszen)
+
+   !$OMP END MASTER
+   !$OMP BARRIER
+
+   !$OMP END PARALLEL
+
 end subroutine radrrtmdrv
 
 
