@@ -93,7 +93,7 @@ FPP=-Mpreprocess
 endif 
 
 ifeq ($(notdir $(FCOMP)),ifort)
-FC_FLAGS=-O0 -g -traceback 
+FC_FLAGS=-O0 -g -traceback -qopenmp 
 CCFLAGS=-O0
 FPP=-fpp
 endif 
@@ -107,7 +107,8 @@ endif
 
 #FCFLAGS=$(FC_FLAGS) -Wl,--no-as-needed -ldl
 FCFLAGS=$(FC_FLAGS) -ldl
-FCFLAGS_OPENMP=$(FC_FLAGS) -ldl -qopenmp
+#FCFLAGS_OPENMP=$(FC_FLAGS) -ldl -qopenmp
+FCFLAGS_OPENMP=$(FC_FLAGS) -ldl 
 
 LOADERFLAGS=$(FCFLAGS)
 LOADERFLAGS_OPENMP=$(FCFLAGS_OPENMP)

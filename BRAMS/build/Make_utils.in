@@ -80,7 +80,7 @@ FPP=-Mpreprocess
 endif 
 
 ifeq ($(notdir $(FCOMP)),ifort)
-FCFLAGS=-O0 -g -traceback 
+FCFLAGS=-O0 -g -traceback -qopenmp 
 CCFLAGS=-O0
 FPP=-fpp
 endif 
