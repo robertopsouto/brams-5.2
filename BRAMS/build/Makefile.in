@@ -93,13 +93,14 @@ FPP=-Mpreprocess
 endif 
 
 ifeq ($(notdir $(FCOMP)),ifort)
-FC_FLAGS=-O0 -g -traceback -qopenmp 
+FC_FLAGS=-O0 -g -traceback -fopenmp 
 CCFLAGS=-O0
 FPP=-fpp
 endif 
 
 ifeq ($(notdir $(FCOMP)),gfortran)
-FC_FLAGS= -O0 -fcheck=bounds  -fbacktrace -fcheck=bounds -g -fcheck=all -finit-real=nan # -Wall -ffpe-trap=invalid,zero
+#FC_FLAGS= -O0 -fcheck=bounds  -fbacktrace -fcheck=bounds -g -fcheck=all -finit-real=nan # -Wall -ffpe-trap=invalid,zero
+FC_FLAGS= -O0 -g -fbacktrace -fopenmp
 #CCFLAGS=-O3
 CCFLAGS=-O0
 FPP=-cpp
@@ -156,7 +157,7 @@ $(EXE): libjules $(LIBUTILS) $(LIBIFS) $(LIBMODEL) $(MAINOBJ)
 
 $(MAINOBJ):  $(MAIN) 
 	@cp -f $< $(<F:.f90=.f90)
-	$(F_COMMAND) $(<F:.f90=.f90) $(EXTRAFLAGSF)
+	$(F_COMMAND_OPENMP) $(<F:.f90=.f90) $(EXTRAFLAGSF_OPENMP)
 	@rm -f $(<F:.f90=.f90) 
 
 $(LIBMODEL): $(OBJ_MODEL)

@@ -80,14 +80,15 @@ FPP=-Mpreprocess
 endif 
 
 ifeq ($(notdir $(FCOMP)),ifort)
-FCFLAGS=-O0 -g -traceback -qopenmp 
+FCFLAGS=-O0 -g -traceback -fopenmp 
 CCFLAGS=-O0
 FPP=-fpp
 endif 
 
 ifeq ($(notdir $(FCOMP)),gfortran)
 #FCFLAGS=-O3 -static
-FC_FLAGS= -O0 -fcheck=bounds  -fbacktrace -fcheck=bounds -g -fcheck=all -finit-real=nan # -Wall -ffpe-trap=invalid,zero
+#FC_FLAGS= -O0 -fcheck=bounds  -fbacktrace -fcheck=bounds -g -fcheck=all -finit-real=nan # -Wall -ffpe-trap=invalid,zero
+FC_FLAGS= -O0 -g -fbacktrace -fopenmp
 CCFLAGS=-O3 -DLITTLE
 FPP=-cpp 
 endif 
@@ -115,10 +116,10 @@ endif
 # Compiler commands.
 INCLUDES   = -I$(UTILS_INCS) $(HDF5_INC) -I$(PAR_INCS) 
 EXTRAFLAGSF =  $(INCLUDES)  $(PAR_DEFS) $(FCFLAGS) $(FPP)
-EXTRAFLAGSF_OPENMP =  $(INCLUDES)  $(PAR_DEFS) $(FCFLAGS) -qopenmp $(FPP)
+EXTRAFLAGSF_OPENMP =  $(INCLUDES)  $(PAR_DEFS) $(FCFLAGS) $(FPP)
 EXTRAFLAGSC = $(INCLUDES) $(PAR_DEFS) $(CCFLAGS)  -D$(CMACH) 
 F_COMMAND  =$(VERBOSE_FC) $(FC) -c 
-F_COMMAND_OPENMP = $(VERBOSE_FC) $(FC) -qopenmp -c
+F_COMMAND_OPENMP = $(VERBOSE_FC) $(FC) -fopenmp -c
 C_COMMAND  =$(VERBOSE_CC) $(CC) -c 
 
 # Define objects.

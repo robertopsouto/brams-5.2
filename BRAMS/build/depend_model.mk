@@ -1614,7 +1614,7 @@ chem_spack_lu.o : $(CCATT)/chem_spack_lu.f90
 
 chem_spack_jacdchemdc.o : $(MODEL_CHEM)/chem_spack_jacdchemdc.f90 chem_spack_dratedc.o
 	@cp -f  $< $(<F:.f90=.f90)
-	$(F_COMMAND_LIGHT) $(<F:.f90=.f90) $(EXTRAFLAGSF) 
+	$(F_COMMAND) $(<F:.f90=.f90) $(EXTRAFLAGSF) 
 	@rm -f $(<F:.f90=.f90) 
 
 chem_spack_dratedc.o : $(MODEL_CHEM)/chem_spack_dratedc.f90
@@ -1994,7 +1994,7 @@ rrtmg_sw_k_g.o: $(RRTMG_SW_SRC)/rrtmg_sw_k_g.f90 parkind.o rrsw_kg16.o rrsw_kg17
 	rrsw_kg25.o rrsw_kg26.o rrsw_kg27.o rrsw_kg28.o rrsw_kg29.o \
 	rrsw_vsn.o
 	cp -f  $< $(<F:.f90=.f90)
-	$(F_COMMAND_LIGHT) $(<F:.f90=.f90)
+	$(F_COMMAND) $(<F:.f90=.f90) $(EXTRAFLAGSF)
 	rm -f $(<F:.f90=.f90)
 
 rrtmg_sw_rad.o: $(RRTMG_SW_SRC)/rrtmg_sw_rad.f90 mcica_subcol_gen_sw.o parkind.o parrrsw.o rrsw_aer.o \
@@ -2195,7 +2195,7 @@ rrtmg_lw_k_g.o: $(RRTMG_LW_SRC)/rrtmg_lw_k_g.f90  parkind.o rrlw_kg01.o rrlw_kg0
 	rrlw_kg10.o rrlw_kg11.o rrlw_kg12.o rrlw_kg13.o rrlw_kg14.o \
 	rrlw_kg15.o rrlw_kg16.o rrlw_vsn.o
 	cp -f  $< $(<F:.f90=.f90)
-	$(F_COMMAND_LIGHT) $(<F:.f90=.f90) 
+	$(F_COMMAND) $(<F:.f90=.f90) $(EXTRAFLAGSF) 
 	rm -f $(<F:.f90=.f90)
 
 rrtmg_lw_rad.o: $(RRTMG_LW_SRC)/rrtmg_lw_rad.f90  mcica_subcol_gen_lw.o parkind.o parrrtm.o rrlw_con.o \
