@@ -850,15 +850,18 @@ contains
    !$OMP PARALLEL                    &
    !$OMP DEFAULT(SHARED)             &
    !$OMP PRIVATE(j,i,noc,np,k)       
-   noc=omp_get_thread_num()
-   ntr=omp_get_num_threads()
-   print *, "VALOR nofcols,noc,ntr: ", nofcols,noc,ntr
+   !noc=omp_get_thread_num()
+   !ntr=omp_get_num_threads()
+   !print *, "VALOR nofcols,noc,ntr: ", nofcols,noc,ntr
+   noc=0
 
    !$OMP DO  
    do j=ja,jz
       do i=ia,iz
 
-         noc=noc+omp_get_num_threads()
+         !noc=noc+omp_get_num_threads()
+         !noc = (j-1)*(iz-ia+1) + i ! (se ia=1 e ja=1)
+         noc = (j-ja)*(iz-ia+1) + (i-ia) + 1! 
       
          ipos(noc)=i
          jpos(noc)=j
