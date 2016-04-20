@@ -1218,6 +1218,10 @@ contains
              )
 
    !--- shortwave section
+   !$OMP PARALLEL                    &
+   !$OMP DEFAULT(SHARED)             &
+   !$OMP PRIVATE(noc,np)
+   !$OMP DO
    do noc=1,nofcols
           call cldprop_sw(nlay, inflgsw, iceflgsw, liqflgsw, cldfmcl_sw(noc,:) , &
                             tauc_sw, ssac, asmc, fsfc, ciwpmcl_sw(noc,:), &
@@ -1231,6 +1235,8 @@ contains
 
       end do
    end do
+   !$OMP END DO 
+   !$OMP END PARALLEL
 
    !examples of dump 3d
    !call dumpvar(real(reicmcl),'rei','-001',nofcols,nlay)
@@ -1289,10 +1295,15 @@ contains
    firsttime=.false.
 
    !- sending out theta tendency and surface radiative fluxes 
+   !$OMP PARALLEL                    &
+   !$OMP DEFAULT(SHARED)             &
+   !$OMP PRIVATE(j,i,noc,k)     
    noc=0
+   !$OMP DO
    do j=ja,jz
       do i=ia,iz
-         noc=noc+1
+         !noc=noc+1
+         noc = (j-ja)*(iz-ia+1) + (i-ia) + 1
          radiate_g(ngrid)%rlong (i,j)=   dflx(noc,1)
          radiate_g(ngrid)%rshort(i,j)= swdflx(noc,1)   
          do k=2,mzp-1
@@ -1303,6 +1314,9 @@ contains
          radiate_g(ngrid)%fthrd(mzp,i,j)= radiate_g(ngrid)%fthrd(mzp-1,i,j)
       end do
    end do
+   !$OMP END DO 
+   !$OMP END PARALLEL
+
    
    if(mynum== 1) then
     write(mynum+5,*) "============= radiation-rrtm ==================="
